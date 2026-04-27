@@ -1,0 +1,19 @@
+import { initializeApp } from 'firebase/app';
+import { getAuth, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import { getFirestore, collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import firebaseConfig from '../../firebase-applet-config.json';
+
+const app = initializeApp(firebaseConfig);
+export const db = getFirestore(app, firebaseConfig.firestoreDatabaseId);
+export const auth = getAuth(app);
+export const googleProvider = new GoogleAuthProvider();
+
+export async function logAuditEvent(type: string, severity: string, description: string) {
+  await addDoc(collection(db, 'audits'), {
+    userId: auth.currentUser?.uid,
+    timestamp: serverTimestamp(),
+    type,
+    severity,
+    description
+  });
+}
